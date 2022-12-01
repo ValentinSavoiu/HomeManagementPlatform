@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/modernizr")
+
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="/home" class="btn btn-primary">HMP</a>
+                <a href="/Members" class="btn btn-primary">Members</a>
+                <a href="/Tickets" class="btn btn-primary">Tickets</a>
+                <button onclick="toggleDark()" class ="btn btn-primary">Toggle dark mode</button>
+                @Html.Partial("_LoginPartial")
+                <br />
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+
+
+</html>
+<style type="text/css" id="dark">
+    * {
+        color: blueviolet;
+    }
+
+    body {
+        background-image: url('/Image/good_background.jpg');
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+    
+    input {
+        background-color: black;
+        color: blueviolet
+    }
+
+    select {
+        background-color: black;
+        color: blueviolet
+    }
+
+    * {
+        color: blueviolet;
+    }
+
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (!sessionStorage.dark) {
+            sessionStorage.setItem("dark", "dark")
+        }
+        if (sessionStorage.dark.localeCompare("dark") == 0) {
+            document.getElementById("dark").disabled = false
+        }
+        else {
+            document.getElementById("dark").disabled = true
+        }
+    }, false);
+    function toggleDark() {
+        if (sessionStorage.dark.localeCompare("dark") == 0) {
+            sessionStorage.dark = "light"
+        }
+        else {
+            sessionStorage.dark = "dark"
+        }
+        document.getElementById("dark").disabled = !document.getElementById("dark").disabled
+    }
+</script>
