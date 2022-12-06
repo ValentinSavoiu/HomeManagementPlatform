@@ -15,10 +15,10 @@
             @Html.DisplayNameFor(model => model.Title)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.CreatorID)
+            @Html.DisplayNameFor(model => model.Creator)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.AssigneeID)
+            @Html.DisplayNameFor(model => model.Assignee)
         </th>
         <th></th>
     </tr>
@@ -29,10 +29,10 @@
             @Html.DisplayFor(modelItem => item.Title)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.CreatorID)
+            @(item.Creator?.FirstName) @(item.Creator?.LastName)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.AssigneeID)
+            @(item.Assignee?.FirstName) @(item.Assignee?.LastName)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.TicketID }) |

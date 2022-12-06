@@ -25,19 +25,19 @@
         <dd style="white-space:pre;">@Html.DisplayFor(model => model.Description)</dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.CreatorID)
+            @Html.DisplayNameFor(model => model.Creator)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.CreatorID)
+            @(Model.Creator?.FirstName) @(Model.Creator?.LastName)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.AssigneeID)
+            @Html.DisplayNameFor(model => model.Assignee)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.AssigneeID)
+            @(Model.Assignee?.FirstName) @(Model.Assignee?.LastName)
         </dd>
 
     </dl>

@@ -11,118 +11,127 @@ using mss_project.Models;
 
 namespace mss_project.Controllers
 {
-    public class TicketsController : Controller
-    {
-        private JiraContext db = new JiraContext();
+	public class TicketsController : Controller
+	{
+		private JiraContext db = new JiraContext();
 
-        // GET: Tickets
-        public ActionResult Index()
-        {
-            return View(db.Tickets.ToList());
-        }
+		// GET: Tickets
+		public ActionResult Index()
+		{
+			List<Ticket> tickets = db.Tickets.ToList();
 
-        // GET: Tickets/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
-        }
+			foreach (var ticket in tickets)
+			{
+				ticket.Creator = db.Members.Find(ticket.CreatorID);
+				ticket.Assignee = db.Members.Find(ticket.AssigneeID);
+			}
+			return View(tickets);
+		}
 
-        // GET: Tickets/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+		// GET: Tickets/Details/5
+		public ActionResult Details(int? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+			Ticket ticket = db.Tickets.Find(id);
+			ticket.Creator = db.Members.Find(ticket.CreatorID);
+			ticket.Assignee = db.Members.Find(ticket.AssigneeID);
+			if (ticket == null)
+			{
+				return HttpNotFound();
+			}
+			return View(ticket);
+		}
 
-        // POST: Tickets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Tickets.Add(ticket);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+		// GET: Tickets/Create
+		public ActionResult Create()
+		{
+			return View();
+		}
 
-            return View(ticket);
-        }
+		// POST: Tickets/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to, for 
+		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Create([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
+		{
+			if (ModelState.IsValid)
+			{
+				db.Tickets.Add(ticket);
+				db.SaveChanges();
+				return RedirectToAction("Index");
+			}
 
-        // GET: Tickets/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
-        }
+			return View(ticket);
+		}
 
-        // POST: Tickets/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(ticket).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(ticket);
-        }
+		// GET: Tickets/Edit/5
+		public ActionResult Edit(int? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+			Ticket ticket = db.Tickets.Find(id);
+			if (ticket == null)
+			{
+				return HttpNotFound();
+			}
+			return View(ticket);
+		}
 
-        // GET: Tickets/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
-        }
+		// POST: Tickets/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to, for 
+		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Edit([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
+		{
+			if (ModelState.IsValid)
+			{
+				db.Entry(ticket).State = EntityState.Modified;
+				db.SaveChanges();
+				return RedirectToAction("Index");
+			}
+			return View(ticket);
+		}
 
-        // POST: Tickets/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Ticket ticket = db.Tickets.Find(id);
-            db.Tickets.Remove(ticket);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+		// GET: Tickets/Delete/5
+		public ActionResult Delete(int? id)
+		{
+			if (id == null)
+			{
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			}
+			Ticket ticket = db.Tickets.Find(id);
+			if (ticket == null)
+			{
+				return HttpNotFound();
+			}
+			return View(ticket);
+		}
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
+		// POST: Tickets/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public ActionResult DeleteConfirmed(int id)
+		{
+			Ticket ticket = db.Tickets.Find(id);
+			db.Tickets.Remove(ticket);
+			db.SaveChanges();
+			return RedirectToAction("Index");
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				db.Dispose();
+			}
+			base.Dispose(disposing);
+		}
+	}
 }
