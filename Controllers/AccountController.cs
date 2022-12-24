@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using mss_project.Models;
+using mss_project.Helpers;
 
 namespace mss_project.Controllers
 {
@@ -75,9 +76,7 @@ namespace mss_project.Controllers
                 return View(model);
             }
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: true);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -110,7 +109,7 @@ namespace mss_project.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Username, Email = model.Email};
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -161,7 +160,8 @@ namespace mss_project.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
+
                 if (user == null)
                 {
                     return View("ForgotPasswordConfirmation");
@@ -176,28 +176,11 @@ namespace mss_project.Controllers
                     
                     var receiverEmail = new MailAddress(model.Email, "Receiver");
                     var subject = "Password recovery";
-                    var body = "Please reset your password by visiting the following link: "+ callbackUrl;
-
-
+                    var body = "Please reset your password by visiting the following link:\n"+ callbackUrl;
+                    EmailSender emailSender = EmailSender.getInstance("D:/secret_store");
+                    emailSender.sendEmail(receiverEmail.Address, subject, body);
                     //EDIT THIS
-                    var email = System.IO.File.ReadAllText(@"D:\secret_store\email.txt");
-                    var senderEmail = new MailAddress(email, "HMP");
-                    string password = System.IO.File.ReadAllText(@"D:\secret_store\pass.txt");
-                    string smtp_server = System.IO.File.ReadAllText(@"D:\secret_store\smtp.txt");
-                    var smtp = new SmtpClient(smtp_server)
-                    {
-                        Port = 587,
-                        EnableSsl = true,
-                        Credentials = new NetworkCredential(senderEmail.Address, password)
-                    };
-                    using (var mess = new MailMessage(senderEmail, receiverEmail)
-                    {
-                        Subject = subject,
-                        Body = body
-                    })
-                    {
-                        smtp.Send(mess);
-                    }
+                    
                     return RedirectToAction("ForgotPasswordConfirmation", "Account");
 
 
@@ -239,15 +222,16 @@ namespace mss_project.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await UserManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
+                return RedirectToAction("ResetPasswordFailed", "Account");
             }
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
+                UserManager.SetLockoutEndDate(user.Id, DateTimeOffset.Now);
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             AddErrors(result);
@@ -258,6 +242,14 @@ namespace mss_project.Controllers
         // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        //
+        // GET: /Account/ResetPasswordFailed
+        [AllowAnonymous]
+        public ActionResult ResetPasswordFailed()
         {
             return View();
         }
