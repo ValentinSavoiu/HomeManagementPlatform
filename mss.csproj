@@ -212,13 +212,10 @@
     <Compile Include="Controllers\TicketsController.cs" />
     <Compile Include="CustomValidations\Name.cs" />
     <Compile Include="DatabaseStuff\JiraContext.cs" />
-    <Compile Include="EmailSender\EmailSender.cs" />
+    <Compile Include="Helpers\DataSeeder.cs" />
+    <Compile Include="Helpers\EmailSender.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\InitialMigration.cs" />
-    <Compile Include="Migrations\InitialMigration.designer.cs">
-      <DependentUpon>InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -408,11 +405,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\InitialMigration.resx">
-      <DependentUpon>InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
