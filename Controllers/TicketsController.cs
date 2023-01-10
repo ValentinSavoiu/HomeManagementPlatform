@@ -56,7 +56,7 @@ namespace mss_project.Controllers
 		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
+		public ActionResult Create([Bind(Include = "TicketID,Title,Status,Description,CreatorID,AssigneeID")] Ticket ticket)
 		{
 			if (ModelState.IsValid)
 			{
@@ -88,7 +88,7 @@ namespace mss_project.Controllers
 		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
+		public ActionResult Edit([Bind(Include = "TicketID,Title,Status,Description,CreatorID,AssigneeID")] Ticket ticket)
 		{
 			if (ModelState.IsValid)
 			{

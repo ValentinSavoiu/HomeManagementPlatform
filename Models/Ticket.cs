@@ -22,10 +22,19 @@ namespace mss_project.Models
         [Required(ErrorMessage = "Description is required"), StringLength(500, ErrorMessage = "The description cannot have more than 500 characters")]
         public string Description { get; set; }
 
-        public int AssigneeID { get; set; }
+		public TicketStatus Status { get; set; }
+
+		public int AssigneeID { get; set; }
         public virtual Member Assignee { get; set; }
 
        
 
+    }
+
+    public enum TicketStatus
+    {
+        Inactive,
+        Active,
+        Completed
     }
 }
