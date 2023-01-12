@@ -1,4 +1,6 @@
-﻿@model mss_project.Models.Ticket
+﻿@using mss_project.Helpers
+
+@model mss_project.Models.Ticket
 
 @{
     ViewBag.Title = "Details";
@@ -13,7 +15,7 @@
         <dt>
             @Html.DisplayNameFor(model => model.Title)
         </dt>
-
+         
         <dd>
             @Html.DisplayFor(model => model.Title)
         </dd>
@@ -23,7 +25,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Status)
+            @EnumHelpers.DisplayName(Model.Status)
         </dd>
 
         <dt>

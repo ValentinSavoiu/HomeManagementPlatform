@@ -212,6 +212,7 @@
     <Compile Include="Controllers\TicketsController.cs" />
     <Compile Include="CustomValidations\Name.cs" />
     <Compile Include="DatabaseStuff\JiraContext.cs" />
+    <Compile Include="Helpers\EnumHelpers.cs" />
     <Compile Include="Helpers\DataSeeder.cs" />
     <Compile Include="Helpers\EmailSender.cs" />
     <Compile Include="Global.asax.cs">

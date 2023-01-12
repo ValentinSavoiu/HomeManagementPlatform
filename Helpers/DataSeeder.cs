@@ -53,7 +53,7 @@ namespace mss_project.Helpers
 
 				dbContext.Tickets.AddRange(new Ticket[]
 				{
-					new Ticket { Title = "Cumparaturi iarna", Status = TicketStatus.Active, Description = "Trebuie\nsa mergem\nla cumparaturi\npentru sarbatori!!!", CreatorID = 1, AssigneeID = 2},
+					new Ticket { Title = "Cumparaturi iarna", Status = TicketStatus.InProgress, Description = "Trebuie\nsa mergem\nla cumparaturi\npentru sarbatori!!!", CreatorID = 1, AssigneeID = 2},
 					new Ticket { Title = "Reparatii frigider", Status = TicketStatus.Completed ,Description = "Trebuie dus frigiderul la service!\nURGENT!!!", CreatorID = 2, AssigneeID = 1}
 				});
 

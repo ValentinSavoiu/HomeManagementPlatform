@@ -33,8 +33,11 @@ namespace mss_project.Models
 
     public enum TicketStatus
     {
-        Inactive,
-        Active,
-        Completed
+        [Display(Name = "Not Started")]
+        NotStarted,
+		[Display(Name = "In Progress")]
+		InProgress,
+		[Display(Name = "Completed")]
+		Completed
     }
 }
