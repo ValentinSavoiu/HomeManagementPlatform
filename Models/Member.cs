@@ -36,6 +36,10 @@ namespace mss_project.Models
         [EmailAddress]
         public string Email { get; set; }
 
-        public virtual ICollection<Ticket> Tickets { get; set; }
+		[InverseProperty("Creator")]
+		public virtual ICollection<Ticket> CreatedTickets { get; set; }
+
+		[InverseProperty("Assignees")]
+        public virtual ICollection<Ticket> AssignedTickets { get; set; }
     }
 }

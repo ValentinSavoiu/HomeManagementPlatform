@@ -23,7 +23,6 @@ namespace mss_project.Controllers
 			foreach (var ticket in tickets)
 			{
 				ticket.Creator = db.Members.Find(ticket.CreatorID);
-				ticket.Assignee = db.Members.Find(ticket.AssigneeID);
 			}
 			return View(tickets);
 		}
@@ -37,7 +36,6 @@ namespace mss_project.Controllers
 			}
 			Ticket ticket = db.Tickets.Find(id);
 			ticket.Creator = db.Members.Find(ticket.CreatorID);
-			ticket.Assignee = db.Members.Find(ticket.AssigneeID);
 			if (ticket == null)
 			{
 				return HttpNotFound();
