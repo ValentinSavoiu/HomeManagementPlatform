@@ -222,6 +222,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\Member.cs" />
+    <Compile Include="Models\ChangeAssigneesViewModel.cs" />
     <Compile Include="Models\Ticket.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -392,6 +393,7 @@
     <Content Include="Views\Groups\Edit.cshtml" />
     <Content Include="Views\Groups\Index.cshtml" />
     <Content Include="Views\Account\ResetPasswordFailed.cshtml" />
+    <Content Include="Views\Tickets\ChangeAssignees.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

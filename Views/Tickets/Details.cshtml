@@ -15,7 +15,7 @@
         <dt>
             @Html.DisplayNameFor(model => model.Title)
         </dt>
-         
+
         <dd>
             @Html.DisplayFor(model => model.Title)
         </dd>
@@ -39,7 +39,16 @@
         </dt>
 
         <dd>
-            @(Model.Creator?.FirstName) @(Model.Creator?.LastName)
+            @Html.DisplayFor(model => model.Creator.FullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Assignees) @Html.ActionLink("Change", "ChangeAssignees", new { id = Model.TicketID })
+        </dt><dd>
+            @foreach (var assignee in Model.Assignees)
+            {
+                @(assignee.FullName)<br />
+            }
         </dd>
 
     </dl>
