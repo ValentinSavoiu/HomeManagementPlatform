@@ -40,16 +40,24 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Creator.FullName)
+            @Html.DisplayFor(model => model.CreatorFullName)
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.Assignees)
         </dt>
+
         <dd>
-            @foreach (var assignee in Model.Assignees)
+            @if (Model.Assignees.ToList().Count > 0)
             {
-                @(assignee.FullName)<br />
+                foreach (var assignee in Model.Assignees)
+                {
+                    @(assignee.FullName)<br />
+                }
+            }
+            else
+            {
+                @("(No members assigned)")
             }
         </dd>
 

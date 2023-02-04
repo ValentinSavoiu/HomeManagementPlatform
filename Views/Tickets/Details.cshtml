@@ -39,17 +39,26 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Creator.FullName)
+            @Html.DisplayFor(model => model.CreatorFullName)
         </dd>
 
         <dt>
             @Html.DisplayNameFor(model => model.Assignees) @Html.ActionLink("Change", "ChangeAssignees", new { id = Model.TicketID })
-        </dt><dd>
-            @foreach (var assignee in Model.Assignees)
+        </dt>
+        
+        <dd>
+            @if (Model.Assignees.ToList().Count > 0)
             {
-                @(assignee.FullName)<br />
+                foreach (var assignee in Model.Assignees)
+                {
+                    @(assignee.FullName)<br />
+                }
             }
-        </dd>
+            else
+            {
+                @("(No members assigned)")
+            }
+         </dd>
 
     </dl>
 </div>

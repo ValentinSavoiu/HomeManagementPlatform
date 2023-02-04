@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace mss_project.Controllers
 		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Create([Bind(Include = "TicketID,Title,Description,CreatorID,AssigneeID")] Ticket ticket)
+		public ActionResult Create([Bind(Include = "TicketID,Title,Description,CreatorID")] Ticket ticket)
 		{
 			if (ModelState.IsValid)
 			{
@@ -88,7 +89,7 @@ namespace mss_project.Controllers
 		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit([Bind(Include = "TicketID,Title,Status,Description,CreatorID,AssigneeID")] Ticket ticket)
+		public ActionResult Edit([Bind(Include = "TicketID,Title,Status,Description,CreatorID")] Ticket ticket)
 		{
 			if (ModelState.IsValid)
 			{
@@ -149,8 +150,13 @@ namespace mss_project.Controllers
 		// POST: Tickets/AddAssignee?ticketID=2
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult AddAssignee(int ticketID, int memberID)
+		public ActionResult AddAssignee(int ticketID, int? memberID)
 		{
+			if(memberID == null)
+			{
+				return RedirectToAction("ChangeAssignees", new { id = ticketID });
+			}
+
 			Member newAssignee = db.Members.Find(memberID);
 			Ticket ticket = db.Tickets.Find(ticketID);
 			ticket.Assignees.Add(newAssignee);

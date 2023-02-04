@@ -21,6 +21,21 @@ namespace mss_project.Models
 		[InverseProperty("CreatedTickets")]
         [ForeignKey("CreatorID")]
 		public virtual Member Creator { get; set; }
+
+        public string CreatorFullName
+        {
+            get
+            {
+                if (CreatorID == null)
+                {
+                    return "(deleted user)";
+                }
+                else
+                {
+                    return Creator.FullName;
+                }
+            }
+        }
         
         [Required(ErrorMessage = "Description is required"), StringLength(500, ErrorMessage = "The description cannot have more than 500 characters")]
         public string Description { get; set; }
