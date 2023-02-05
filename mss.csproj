@@ -220,9 +220,12 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\MembersAdminViewModel.cs" />
+    <Compile Include="Models\GroupsAdministratorViewModel.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\ChangeAssigneesViewModel.cs" />
+    <Compile Include="Models\GroupMember.cs" />
     <Compile Include="Models\Ticket.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -389,11 +392,12 @@
     <Content Include="Views\Tickets\Index.cshtml" />
     <Content Include="Views\Groups\Create.cshtml" />
     <Content Include="Views\Groups\Delete.cshtml" />
-    <Content Include="Views\Groups\Details.cshtml" />
+    <Content Include="Views\Groups\Members.cshtml" />
     <Content Include="Views\Groups\Edit.cshtml" />
     <Content Include="Views\Groups\Index.cshtml" />
     <Content Include="Views\Account\ResetPasswordFailed.cshtml" />
     <Content Include="Views\Tickets\ChangeAssignees.cshtml" />
+    <Content Include="Views\Groups\EditNickname.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

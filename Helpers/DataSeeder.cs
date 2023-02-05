@@ -42,14 +42,27 @@ namespace mss_project.Helpers
 				// Discriminator is a column that is automatically created whenever a model is a derived class
 				// it is not required because only ApplicationUser inherits from IdentityUser
 				dbContext.Database.ExecuteSqlCommand("ALTER TABLE AspNetUsers DROP COLUMN Discriminator;");
-
 				dbContext.Database.ExecuteSqlCommand("ALTER TABLE Ticket DROP CONSTRAINT [FK_dbo.Ticket_dbo.Member_CreatorID];");
 				dbContext.Database.ExecuteSqlCommand("ALTER TABLE Ticket ADD CONSTRAINT [FK_dbo.Ticket_dbo.Member_CreatorID] FOREIGN KEY ([CreatorID]) REFERENCES [dbo].[Member] ([MemberID]) ON DELETE SET NULL");
-				
-				await userManager.CreateAsync(new ApplicationUser { UserName = "ioniq_alex", Email = "ionica.alexandru@email.com" }, "123456");
-				await userManager.CreateAsync(new ApplicationUser { UserName = "barbu_radu", Email = "barbu.radu@email.com" }, "qwerty");
-				await userManager.CreateAsync(new ApplicationUser { UserName = "nicoleta.rebeca", Email = "nicoleta.rebeca@nice-email.com" }, "123456");
-				await userManager.CreateAsync(new ApplicationUser { UserName = "delia_mariana", Email = "delia_mariana@email.com" }, "qwerty");
+
+				var UsersList = new ApplicationUser[] { 
+					new ApplicationUser { UserName = "ioniq_alex", Email = "ionica.alexandru@email.com" },
+					new ApplicationUser { UserName = "barbu_radu", Email = "barbu.radu@email.com" },
+					new ApplicationUser { UserName = "nicoleta.rebeca", Email = "nicoleta.rebeca@nice-email.com" },
+					new ApplicationUser { UserName = "delia_mariana", Email = "delia_mariana@email.com" },
+				};
+
+				var PassList = new String[]{"123456", "qwerty", "123456", "qwerty"};
+
+				for(int i = 0; i < UsersList.Length; i++)
+                {
+					await userManager.CreateAsync(UsersList[i], PassList[i]);
+				}
+
+				//await userManager.CreateAsync(new ApplicationUser { UserName = "ioniq_alex", Email = "ionica.alexandru@email.com" }, "123456");
+				//await userManager.CreateAsync(new ApplicationUser { UserName = "barbu_radu", Email = "barbu.radu@email.com" }, "qwerty");
+				//await userManager.CreateAsync(new ApplicationUser { UserName = "nicoleta.rebeca", Email = "nicoleta.rebeca@nice-email.com" }, "123456");
+				//await userManager.CreateAsync(new ApplicationUser { UserName = "delia_mariana", Email = "delia_mariana@email.com" }, "qwerty");
 
 				var members = new Member[] {
 					new Member { FirstName = "Ionica", LastName = "Alexandru", Email = "ionica.alexandru@email.com"},
@@ -75,6 +88,28 @@ namespace mss_project.Helpers
 				tickets[0].Creator = members[0];
 				tickets[1].Creator = members[1];
 				tickets[2].Creator = members[2];
+
+				dbContext.SaveChanges();
+
+				var GroupsList = new Group[] { 
+					new Group { Name = "Grup frumos", OwnerEmail = "ionica.alexandru@email.com" },
+					new Group { Name = "grup respectat", OwnerEmail = "barbu.radu@email.com" },
+					new Group { Name = "Eu sunt cineva", OwnerEmail = "nicoleta.rebeca@nice-email.com" },
+				};
+				dbContext.Groups.AddRange(GroupsList);
+				dbContext.SaveChanges();
+
+				var ListAppUserGroup = new GroupMember[]
+				{
+					new GroupMember{AppUser_ID = UsersList[0].Id, Group_ID = GroupsList[0].GroupID, NickName = "Tata_sef"},
+					new GroupMember{AppUser_ID = UsersList[1].Id, Group_ID = GroupsList[0].GroupID, NickName = "Fiul_member"},
+					new GroupMember{AppUser_ID = UsersList[0].Id, Group_ID = GroupsList[1].GroupID, NickName = "Tata_membru"},
+					new GroupMember{AppUser_ID = UsersList[1].Id, Group_ID = GroupsList[1].GroupID, NickName = "Fiul_sef"},
+					new GroupMember{AppUser_ID = UsersList[2].Id, Group_ID = GroupsList[2].GroupID, NickName = "Mama_sef"},
+
+				};
+
+				dbContext.GroupMembers.AddRange(ListAppUserGroup);
 
 				dbContext.SaveChanges();
 			}
