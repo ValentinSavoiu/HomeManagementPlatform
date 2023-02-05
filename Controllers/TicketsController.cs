@@ -167,7 +167,7 @@ namespace mss_project.Controllers
 			var receiverEmail = new MailAddress(newAssignee.Email, "Receiver");
 			var subject = "Ticket assignment";
 			var body = "You have been assigned to ticket " + "\"" + ticket.Title + "\". " + "To see more details, visit the following link:\n" + callbackUrl;
-			EmailSender emailSender = EmailSender.getInstance("C:\\Users\\Me\\Desktop\\secret_store");
+			EmailSender emailSender = EmailSender.getInstance();
 			emailSender.sendEmail(receiverEmail.Address, subject, body);
 
 			return RedirectToAction("ChangeAssignees", new { id = ticketID });

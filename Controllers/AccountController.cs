@@ -177,7 +177,7 @@ namespace mss_project.Controllers
                     var receiverEmail = new MailAddress(model.Email, "Receiver");
                     var subject = "Password recovery";
                     var body = "Please reset your password by visiting the following link:\n"+ callbackUrl;
-                    EmailSender emailSender = EmailSender.getInstance("D:/secret_store");
+                    EmailSender emailSender = EmailSender.getInstance();
                     emailSender.sendEmail(receiverEmail.Address, subject, body);
                     //EDIT THIS
                     
