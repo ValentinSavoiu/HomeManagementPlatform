@@ -1,0 +1,68 @@
+﻿@model mss_project.Models.ChangeAssigneesViewModel
+
+@{
+    ViewBag.Title = "Assignees";
+}
+
+<h2>Assignees</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var assignee in Model.Assignees)
+    {
+        <tr>
+            <td>
+                @(assignee.FullName)
+            </td>
+
+            <td>
+                @using (Html.BeginForm("RemoveAssignee", "Tickets", new { ticketID = Model.TicketID, memberID = assignee.MemberID }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-actions no-color">
+                        <input type="submit" value="Remove" class="btn btn-primary" />
+                    </div>
+                }
+            </td>
+        </tr>
+    }
+
+</table>
+
+@using (Html.BeginForm("AddAssignee", "Tickets", new { ticketID = Model.TicketID }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group row">
+        <div class="col-md-10">
+
+            @Html.DropDownList(
+                "memberID",
+                new SelectList(
+                    Model.UnassignedMembers.Select(x => new { Value = x.MemberID, Text = x.FullName }),
+                    "Value",
+                    "Text"
+                ),
+                "(Select a member)",
+                new { @class = "form-control" }
+            )
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Assign member" class="btn btn-primary" />
+        </div>
+    </div>
+}
+
+@Html.ActionLink("Back to Details", "Details", new { id = Model.TicketID })

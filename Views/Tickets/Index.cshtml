@@ -17,27 +17,23 @@
         <th>
             @Html.DisplayNameFor(model => model.Creator)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Assignee)
-        </th>
+
         <th></th>
     </tr>
 
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Title)
+            @Html.DisplayFor(model => item.Title)
         </td>
         <td>
-            @(item.Creator?.FirstName) @(item.Creator?.LastName)
+            @Html.DisplayFor(model => item.CreatorFullName)
         </td>
+
         <td>
-            @(item.Assignee?.FirstName) @(item.Assignee?.LastName)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.TicketID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.TicketID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.TicketID })
+            @Html.ActionLink("Edit", "Edit", new { id = item.TicketID }) |
+            @Html.ActionLink("Details", "Details", new { id = item.TicketID }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.TicketID })
         </td>
     </tr>
 }

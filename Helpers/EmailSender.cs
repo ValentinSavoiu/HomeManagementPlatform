@@ -28,7 +28,6 @@ namespace mss_project.Helpers
             email = System.IO.File.ReadAllText(string.Format("{0}\\email.txt", secret_store));
             password = System.IO.File.ReadAllText(string.Format("{0}\\pass.txt", secret_store));
             smtp_server = System.IO.File.ReadAllText(string.Format("{0}\\smtp.txt", secret_store));
-            Console.Write(email + " " + password + " " + smtp_server);
             smtpClient = new SmtpClient(smtp_server)
             {
                 Port = 587,
@@ -38,8 +37,9 @@ namespace mss_project.Helpers
             
         }
 
-        public static EmailSender getInstance(string secret_store) 
-        { 
+        public static EmailSender getInstance() 
+        {
+            string secret_store = "D:\\secret_store";
             if (instance == null)
             {
                 instance = new EmailSender(secret_store);
