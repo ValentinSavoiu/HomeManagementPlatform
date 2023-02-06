@@ -68,8 +68,22 @@ namespace mss_project.Controllers
             return View(new MembersAdminViewModel { UserInfo = UserInfo, ListGroupNicknames = AllNicknames, CurrUser = CurrUser, Group = group});
         }
 
-        // GET: Groups/Create
-        public ActionResult Create()
+		// GET: Groups/Tickets/5
+		public ActionResult Tickets(int? id)
+		{
+            Group currentGroup = db.Groups.Find(id);
+			List<Ticket> tickets = db.Tickets.Where(x => x.GroupID == id).ToList();
+			List<string> ticketCreatorNickNames = new List<string> { };
+			foreach (var ticket in tickets)
+			{
+				ticketCreatorNickNames.Add(ticket.GetCreatorNickname(db));
+			}
+
+			return View(new TicketIndexViewModel { currentGroup = currentGroup, tickets = tickets, ticketCreatorNickNames = ticketCreatorNickNames });
+		}
+
+		// GET: Groups/Create
+		public ActionResult Create()
         {
             return View();
         }
@@ -95,8 +109,30 @@ namespace mss_project.Controllers
             return View(group);
         }
 
-        // GET: Groups/Edit/5
-        public ActionResult ChangeName(int? id)
+		// GET: Groups/CreateTicket/5
+		public ActionResult CreateTicket(int groupId)
+		{
+            var currentUserID = db.ApplicationUsers.Find(User.Identity.GetUserId()).Id;
+			return View(new Ticket { GroupID = groupId, CreatorID = currentUserID });
+		}
+
+		// POST: Groups/CreateTicket
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult CreateTicket([Bind(Include = "TicketID,GroupID,CreatorID,Title,Description")] Ticket ticket)
+		{
+			if (ModelState.IsValid)
+			{
+				db.Tickets.Add(ticket);
+				db.SaveChanges();
+				return RedirectToAction("Tickets", new { id = ticket.GroupID});
+			}
+
+			return View(ticket);
+		}
+
+		// GET: Groups/Edit/5
+		public ActionResult ChangeName(int? id)
         {
             if (id == null)
             {

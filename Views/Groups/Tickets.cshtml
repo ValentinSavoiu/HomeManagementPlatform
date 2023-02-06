@@ -1,0 +1,45 @@
+﻿@model mss_project.Models.TicketIndexViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h1>@(Model.currentGroup.Name)</h1>
+<h2>Tickets</h2>
+<p>
+    @Html.ActionLink("Create New Ticket", "CreateTicket", new { groupId = Model.currentGroup.GroupID })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @("Title")
+        </th>
+        <th>
+            @("Creator")
+        </th>
+
+        <th></th>
+    </tr>
+
+    @for (int i = 0; i < Model.tickets.Count(); ++i)
+    {
+        <tr>
+            <td>
+                @(Model.tickets[i].Title)
+            </td>
+            <td>
+                @(Model.ticketCreatorNickNames[i])
+            </td>
+
+            <td>
+                @Html.ActionLink("Edit", "Edit", "Tickets", new { id = Model.tickets[i].TicketID }, new { }) |
+                @Html.ActionLink("Details", "Details", "Tickets", new { id = Model.tickets[i].TicketID }, new { }) |
+                @Html.ActionLink("Delete", "Delete", "Tickets", new { id = Model.tickets[i].TicketID }, new { })
+            </td>
+        </tr>
+    }
+
+</table>
+<p>
+    @Html.ActionLink("Back to Groups", "Index")
+</p>

@@ -17,7 +17,14 @@ namespace mss_project.Models
     public class ApplicationUser : IdentityUser
     {
         public virtual ICollection<GroupMember> Groups { get; set; }
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
+
+		[InverseProperty("Creator")]
+		public virtual ICollection<Ticket> CreatedTickets { get; set; }
+
+		[InverseProperty("Assignees")]
+		public virtual ICollection<Ticket> AssignedTickets { get; set; }
+
+		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);

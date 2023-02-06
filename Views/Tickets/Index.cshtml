@@ -1,4 +1,4 @@
-﻿@model IEnumerable<mss_project.Models.Ticket>
+﻿@model mss_project.Models.TicketIndexViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -12,28 +12,28 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Title)
+            @("Title")
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Creator)
+            @("Creator")
         </th>
 
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@for (int i = 0; i < Model.tickets.Count(); ++i) {
     <tr>
         <td>
-            @Html.DisplayFor(model => item.Title)
+            @(Model.tickets[i].Title)
         </td>
         <td>
-            @Html.DisplayFor(model => item.CreatorFullName)
+            @(Model.ticketCreatorNickNames[i])
         </td>
 
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.TicketID }) |
-            @Html.ActionLink("Details", "Details", new { id = item.TicketID }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.TicketID })
+            @Html.ActionLink("Edit", "Edit", new { id = Model.tickets[i].TicketID }) |
+            @Html.ActionLink("Details", "Details", new { id = Model.tickets[i].TicketID }) |
+            @Html.ActionLink("Delete", "Delete", new { id = Model.tickets[i].TicketID })
         </td>
     </tr>
 }

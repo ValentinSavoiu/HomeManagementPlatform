@@ -16,26 +16,17 @@ namespace mss_project.Models
         [Required(ErrorMessage = "Title is required"), StringLength(100, ErrorMessage = "The title cannot have more than 100 characters")]
         public string Title { get; set; }
 
-        public int? CreatorID { get; set; }
+		public int GroupID{ get; set; }
+
+		[InverseProperty("Tickets")]
+		[ForeignKey("GroupID")]
+		public virtual Group Group { get; set; }
+
+		public string CreatorID { get; set; }
         
 		[InverseProperty("CreatedTickets")]
         [ForeignKey("CreatorID")]
-		public virtual Member Creator { get; set; }
-
-        public string CreatorFullName
-        {
-            get
-            {
-                if (CreatorID == null)
-                {
-                    return "(deleted user)";
-                }
-                else
-                {
-                    return Creator.FullName;
-                }
-            }
-        }
+		public virtual ApplicationUser Creator { get; set; }
         
         [Required(ErrorMessage = "Description is required"), StringLength(500, ErrorMessage = "The description cannot have more than 500 characters")]
         public string Description { get; set; }
@@ -43,7 +34,7 @@ namespace mss_project.Models
 		public TicketStatus Status { get; set; }
 
         [InverseProperty("AssignedTickets")]
-		public virtual ICollection<Member> Assignees { get; set; }
+		public virtual ICollection<ApplicationUser> Assignees { get; set; }
 
 
 

@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using mss_project.DatabaseStuff;
 using mss_project.Helpers;
 using mss_project.Models;
@@ -18,17 +19,19 @@ namespace mss_project.Controllers
 	public class TicketsController : Controller
 	{
 		private JiraContext db = new JiraContext();
+		private ApplicationUserManager userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(new ApplicationDbContext()));
 
 		// GET: Tickets
 		public ActionResult Index()
 		{
 			List<Ticket> tickets = db.Tickets.ToList();
-
+			List<string> ticketCreatorNickNames = new List<string> { };
 			foreach (var ticket in tickets)
 			{
-				ticket.Creator = db.Members.Find(ticket.CreatorID);
+				ticketCreatorNickNames.Add(ticket.GetCreatorNickname(db));
 			}
-			return View(tickets);
+
+			return View(new TicketIndexViewModel { tickets = tickets, ticketCreatorNickNames = ticketCreatorNickNames});
 		}
 
 		// GET: Tickets/Details/5
@@ -38,12 +41,14 @@ namespace mss_project.Controllers
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
+
 			Ticket ticket = db.Tickets.Find(id);
 			if (ticket == null)
 			{
 				return HttpNotFound();
 			}
-			return View(ticket);
+
+			return View(new TicketDetailsViewModel { currentTicket = ticket, CreatorNickName = ticket.GetCreatorNickname(db), AssigneesNickNames = ticket.GetAssigneeNicknames(db) });
 		}
 
 		// GET: Tickets/Create
@@ -89,13 +94,13 @@ namespace mss_project.Controllers
 		// more details see https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit([Bind(Include = "TicketID,Title,Status,Description,CreatorID")] Ticket ticket)
+		public ActionResult Edit([Bind(Include = "TicketID,GroupID,CreatorID,Title,Status,Description")] Ticket ticket)
 		{
 			if (ModelState.IsValid)
 			{
 				db.Entry(ticket).State = EntityState.Modified;
 				db.SaveChanges();
-				return RedirectToAction("Index");
+				return RedirectToAction("Tickets", "Groups", new {id = ticket.GroupID});
 			}
 			return View(ticket);
 		}
@@ -112,7 +117,7 @@ namespace mss_project.Controllers
 			{
 				return HttpNotFound();
 			}
-			return View(ticket);
+			return View(new TicketDetailsViewModel { currentTicket = ticket, CreatorNickName = ticket.GetCreatorNickname(db), AssigneesNickNames = ticket.GetAssigneeNicknames(db) }); ;
 		}
 
 		// POST: Tickets/Delete/5
@@ -123,7 +128,7 @@ namespace mss_project.Controllers
 			Ticket ticket = db.Tickets.Find(id);
 			db.Tickets.Remove(ticket);
 			db.SaveChanges();
-			return RedirectToAction("Index");
+			return RedirectToAction("Tickets", "Groups", new { id = ticket.GroupID });
 		}
 
 		// GET: Tickets/ChangeAssignees/5
@@ -135,29 +140,34 @@ namespace mss_project.Controllers
 			}
 
 			Ticket ticket = db.Tickets.Find(id);
-			var model = new ChangeAssigneesViewModel();
-			model.TicketID = ticket.TicketID;
-			model.Assignees = ticket.Assignees.ToList();
-			model.UnassignedMembers = db.Members.ToList().Except(model.Assignees).ToList();
+
+			var unassignedMembers = db.GroupMembers.Where(x => x.Group_ID == ticket.GroupID).Select(x => x.User).ToList()
+				.Except(ticket.Assignees).ToList();
+
+			Ticket dummyTicket = new Ticket { GroupID = ticket.GroupID, Assignees = unassignedMembers };
 
 			if (ticket == null)
 			{
 				return HttpNotFound();
 			}
-			return View(model);
+			return View(new ChangeAssigneesViewModel {
+				currentTicket = ticket, 
+				Assignees = ticket.Assignees.ToList().Zip(ticket.GetAssigneeNicknames(db), (first, second) => new Tuple<ApplicationUser, string> (first, second)).ToList(), 
+				UnassignedMembers = unassignedMembers.Zip(dummyTicket.GetAssigneeNicknames(db), (first, second) => new Tuple<ApplicationUser, string>(first, second)).ToList(), 
+			});
 		}
 
 		// POST: Tickets/AddAssignee?ticketID=2
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult AddAssignee(int ticketID, int? memberID)
+		public ActionResult AddAssignee(int ticketID, string userID)
 		{
-			if(memberID == null)
+			if(userID == "")
 			{
 				return RedirectToAction("ChangeAssignees", new { id = ticketID });
 			}
 
-			Member newAssignee = db.Members.Find(memberID);
+			ApplicationUser newAssignee = db.ApplicationUsers.Where(x => x.Id == userID).Single();
 			Ticket ticket = db.Tickets.Find(ticketID);
 			ticket.Assignees.Add(newAssignee);
 			db.SaveChanges();
@@ -166,20 +176,20 @@ namespace mss_project.Controllers
 			var callbackUrl = Url.Action("Details", "Tickets", new { id = ticketID, }, protocol: Request.Url.Scheme);
 			var receiverEmail = new MailAddress(newAssignee.Email, "Receiver");
 			var subject = "Ticket assignment";
-			var body = "You have been assigned to ticket " + "\"" + ticket.Title + "\". " + "To see more details, visit the following link:\n" + callbackUrl;
+			var body = "You have been assigned to ticket " + "\"" + ticket.Title + "\" from group "+ "\"" + ticket.Group.Name + "\"" + ". " + "To see more details, visit the following link:\n" + callbackUrl;
 			EmailSender emailSender = EmailSender.getInstance();
 			emailSender.sendEmail(receiverEmail.Address, subject, body);
 
 			return RedirectToAction("ChangeAssignees", new { id = ticketID });
 		}
 
-		// POST: Ticket/RemoveAssignee?ticketId=1&memberId=1
+		// POST: Ticket/RemoveAssignee?ticketId=1&userId="aaa-bbb-ccc"
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult RemoveAssignee(int ticketID, int memberID)
+		public ActionResult RemoveAssignee(int ticketID, string userID)
 		{
 			Ticket ticket = db.Tickets.Find(ticketID);
-			Member assignee = db.Members.Find(memberID);
+			ApplicationUser assignee = db.ApplicationUsers.Where(x => x.Id == userID).Single();
 			ticket.Assignees.Remove(assignee);
 			db.SaveChanges();
 			return RedirectToAction("ChangeAssignees", new { id = ticketID });

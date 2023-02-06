@@ -1,6 +1,6 @@
 ﻿@using mss_project.Helpers
 
-@model mss_project.Models.Ticket
+@model mss_project.Models.TicketDetailsViewModel
 
 @{
     ViewBag.Title = "Delete";
@@ -14,45 +14,53 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.currentTicket.Title)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.currentTicket.Title)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.currentTicket.Status)
         </dt>
 
         <dd>
-            @EnumHelpers.DisplayName(Model.Status)
+            @EnumHelpers.DisplayName(Model.currentTicket.Status)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.currentTicket.Description)
         </dt>
 
-        <dd style="white-space:pre;">@Html.DisplayFor(model => model.Description)</dd>
+        <dd style="white-space:pre;">@Html.DisplayFor(model => model.currentTicket.Description)</dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Creator)
+            @Html.DisplayNameFor(model => model.currentTicket.Creator)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.CreatorFullName)
+            @Html.DisplayFor(model => model.CreatorNickName)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Assignees)
+            @Html.DisplayNameFor(model => model.currentTicket.Assignees)
         </dt>
 
         <dd>
-            @if (Model.Assignees.ToList().Count > 0)
+            @if (Model.AssigneesNickNames.Count > 0)
             {
-                foreach (var assignee in Model.Assignees)
+                foreach (var assigneeNickName in Model.AssigneesNickNames)
                 {
-                    @(assignee.FullName)<br />
+                    if (assigneeNickName != null)
+                    {
+                        @(assigneeNickName)<br />
+                    }
+                    else
+                    {
+                        @(assigneeNickName)<br />
+                    }
+
                 }
             }
             else
@@ -69,7 +77,7 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-primary" /> |
-            @Html.ActionLink("Back to List", "Index")
+            @Html.ActionLink("Back to Tickets", "Tickets", "Groups", new { id = Model.currentTicket.GroupID }, new { })
         </div>
     }
 </div>

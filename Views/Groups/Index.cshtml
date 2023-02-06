@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Groups</h2>
 
 <p>
     @Html.ActionLink("Create New Group", "Create")
@@ -40,6 +40,7 @@
                 <td>
                     @Html.ActionLink("Change Name", "ChangeName", new { id = item.GroupID }) |
                     @Html.ActionLink("Members", "Members", new { id = item.GroupID }) |
+                    @Html.ActionLink("Tickets", "Tickets", new { id = item.GroupID }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.GroupID })
                 </td>
             }
@@ -52,6 +53,7 @@
 
                 <div class="form-actions no-color">
                     @Html.ActionLink("Members", "Members", new { id = item.GroupID }) |
+                    @Html.ActionLink("Tickets", "Tickets", new { id = item.GroupID }) |
                     <input type="submit" value="Exit Group" class="btn btn-primary" />
                 </div>
             }

@@ -20,11 +20,12 @@ namespace mss_project.DatabaseStuff
         public DbSet<Group> Groups { get; set; }
 
         public DbSet<GroupMember> GroupMembers { get; set; }
+		public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers").HasKey(k => k.Id);
-            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers");
+			modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             base.OnModelCreating(modelBuilder);
             
         }

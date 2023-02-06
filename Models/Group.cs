@@ -19,7 +19,10 @@ namespace mss_project.Models
         // adaug si o lista de membrii
         //public List<Member> 
         public virtual ICollection<GroupMember> Users { get; set; }
-    }
+
+		[InverseProperty("Group")]
+		public virtual ICollection<Ticket> Tickets { get; set; }
+	}
 }
 // caut userul dupa email
 // ii iau id-ul

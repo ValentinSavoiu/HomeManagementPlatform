@@ -16,15 +16,15 @@
         <th></th>
     </tr>
 
-    @foreach (var assignee in Model.Assignees)
+    @for (int i = 0; i < Model.Assignees.Count(); ++i)
     {
         <tr>
             <td>
-                @(assignee.FullName)
+                @(Model.Assignees[i].Item2)
             </td>
 
             <td>
-                @using (Html.BeginForm("RemoveAssignee", "Tickets", new { ticketID = Model.TicketID, memberID = assignee.MemberID }, FormMethod.Post))
+                @using (Html.BeginForm("RemoveAssignee", "Tickets", new { ticketID = Model.currentTicket.TicketID, userID = Model.Assignees[i].Item1.Id }, FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
 
@@ -38,7 +38,7 @@
 
 </table>
 
-@using (Html.BeginForm("AddAssignee", "Tickets", new { ticketID = Model.TicketID }))
+@using (Html.BeginForm("AddAssignee", "Tickets", new { ticketID = Model.currentTicket.TicketID }))
 {
     @Html.AntiForgeryToken()
 
@@ -46,9 +46,9 @@
         <div class="col-md-10">
 
             @Html.DropDownList(
-                "memberID",
+                "userID",
                 new SelectList(
-                    Model.UnassignedMembers.Select(x => new { Value = x.MemberID, Text = x.FullName }),
+                    Model.UnassignedMembers.Select(x => new { Value = x.Item1.Id, Text = x.Item2 }),
                     "Value",
                     "Text"
                 ),
@@ -65,4 +65,4 @@
     </div>
 }
 
-@Html.ActionLink("Back to Details", "Details", new { id = Model.TicketID })
+@Html.ActionLink("Back to Details", "Details", new { id = Model.currentTicket.TicketID })
