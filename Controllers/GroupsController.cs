@@ -28,22 +28,33 @@ namespace mss_project.Controllers
             Debug.WriteLine(AllJoinedGroups);
             Debug.WriteLine(Owner.Email.ToString());
             return View(new GroupsAdministratorViewModel{ CurrentUser = Owner, ListGroupsJoined = AllJoinedGroups });
-            return View();
         }
 
         // GET: Groups/Members/5
         public ActionResult Members(int? id)
         {
-            var CurrUser = userManager.Users.ToList().Find(x => x.Id == User.Identity.GetUserId());
-            var AllGroupMembers = db.GroupMembers.ToList().FindAll(x => x.Group_ID == id);
-            var AllUsersJoined = AllGroupMembers.ConvertAll(x => x.AppUser_ID);
-            List<string> ListUsernames = new List<string> { };
-            for(int i = 0; i< AllUsersJoined.Count; i++)
+            var CurrUserApp = userManager.Users.ToList().Find(x => x.Id == User.Identity.GetUserId());
+            var CurrUser = new UserViewModel {
+                Id = CurrUserApp.Id,
+                Email = CurrUserApp.Email,
+                UserName = CurrUserApp.UserName
+            };
+			var AllGroupMembers = db.GroupMembers.ToList().FindAll(x => x.Group_ID == id);
+            List<ApplicationUser> Members = new List<ApplicationUser> { };
+            for(int i = 0; i < AllGroupMembers.Count; i++)
             {
-                string username = userManager.Users.ToList().Find(x => x.Id == AllUsersJoined[i]).UserName;
-                ListUsernames.Add(username);
+				ApplicationUser user = userManager.Users.ToList().Find(x => x.Id == AllGroupMembers[i].AppUser_ID);
+				Members.Add(user);
             }
-            var AllNicknames = AllGroupMembers.ConvertAll(x => x.NickName);
+
+			var UserInfo = Members.Select(x => new UserViewModel {
+				Id = x.Id,
+                Email = x.Email,
+                UserName = x.UserName
+			}).ToList();
+
+			var AllNicknames = AllGroupMembers.ConvertAll(x => x.NickName);
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -53,13 +64,8 @@ namespace mss_project.Controllers
             {
                 return HttpNotFound();
             }
-            bool bIsOwner = false;
-            if (group.OwnerEmail == CurrUser.Email)
-            {
-                bIsOwner = true;
-            }
 
-            return View(new MembersAdminViewModel { MembersID = AllUsersJoined, GroupUsers = ListUsernames, ListGroupNicknames = AllNicknames, bIsOwner = bIsOwner , GroupID = (int)id});
+            return View(new MembersAdminViewModel { UserInfo = UserInfo, ListGroupNicknames = AllNicknames, CurrUser = CurrUser, Group = group});
         }
 
         // GET: Groups/Create
@@ -81,7 +87,7 @@ namespace mss_project.Controllers
                 group.OwnerEmail = Owner.Email;
                 db.Groups.Add(group);
                 db.SaveChanges();
-                db.GroupMembers.Add(new GroupMember { AppUser_ID = Owner.Id, Group_ID = group.GroupID, NickName = "Sef" });
+                db.GroupMembers.Add(new GroupMember { AppUser_ID = Owner.Id, Group_ID = group.GroupID, NickName = Owner.UserName });
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -90,7 +96,7 @@ namespace mss_project.Controllers
         }
 
         // GET: Groups/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult ChangeName(int? id)
         {
             if (id == null)
             {
@@ -109,7 +115,7 @@ namespace mss_project.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "GroupID,Name,OwnerEmail")] Group group)
+        public ActionResult ChangeName([Bind(Include = "GroupID,Name,OwnerEmail")] Group group)
         {
             if (ModelState.IsValid)
             {
@@ -167,7 +173,7 @@ namespace mss_project.Controllers
             GroupMember memb = db.GroupMembers.ToList().Find(x => x.AppUser_ID == memberID && x.Group_ID == id_group);
             db.GroupMembers.Remove(memb);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Members", new { id = id_group });
         }
 
         // POST: Groups/AddMember/5
@@ -175,12 +181,13 @@ namespace mss_project.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddMember(int GroupID, string email)
         {
-            var NewMemb = " ";
-            var username = userManager.Users.ToList().Find(x => x.Email == email).UserName;
+            var NewMemb = "";
+            var username = "";
             if (userManager.Users.ToList().FindAll(x => x.Email == email).Count != 0)
             {
                 NewMemb = userManager.Users.ToList().Find(x => x.Email == email).Id;
-            }
+				username = userManager.Users.ToList().Find(x => x.Email == email).UserName;
+			}
             else
             {
                 return RedirectToAction("Members", new { id = GroupID });
@@ -191,7 +198,7 @@ namespace mss_project.Controllers
                 return RedirectToAction("Members", new { id = GroupID });
             }
             // send email
-            var callbackUrl = Url.Action("Details", "Groups", new { id = GroupID, }, protocol: Request.Url.Scheme);
+            var callbackUrl = Url.Action("Members", "Groups", new { id = GroupID, }, protocol: Request.Url.Scheme);
             var receiverEmail = new MailAddress(email, "Receiver");
             var subject = "Request join group";
             var body = "You have been requested to join the group " + "\"" + group.Name + "\". " + "To see more details, visit the following link:\n" + callbackUrl;
@@ -213,30 +220,32 @@ namespace mss_project.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             GroupMember groupMem = db.GroupMembers.ToList().Find(x => x.AppUser_ID == id && x.Group_ID == GroupID);
+            var MemberUsername = userManager.Users.ToList().Find(x => x.Id == groupMem.AppUser_ID).UserName;
 
-            if (groupMem == null)
+			if (groupMem == null)
             {
                 return HttpNotFound();
             }
-            return View(groupMem);
+            return View(new EditNicknameViewModel{ CurrentMember = groupMem , MemberUsername = MemberUsername });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult EditNickname([Bind(Include = "Group_ID,AppUser_ID,NickName")] GroupMember group)
         {
-            if (ModelState.IsValid)
+			var MemberUsername = userManager.Users.ToList().Find(x => x.Id == group.AppUser_ID).UserName;
+			if (ModelState.IsValid)
             {
                 if (group.NickName == null)
                 {
-                    return View(group);
-                }
+					return View(new EditNicknameViewModel { CurrentMember = group, MemberUsername = MemberUsername });
+				}
                 db.Entry(group).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Members", new { id = group.Group_ID });
             }
-            return View(group);
-        }
+			return View(new EditNicknameViewModel { CurrentMember = group, MemberUsername = MemberUsername });
+		}
 
         protected override void Dispose(bool disposing)
         {

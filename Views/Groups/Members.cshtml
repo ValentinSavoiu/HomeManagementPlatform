@@ -4,26 +4,21 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-@if (Model.bIsOwner)
+<h1>@(Model.Group.Name)</h1>
+<h2>Members</h2>
+@if (Model.Group.OwnerEmail == Model.CurrUser.Email)
 {
-    using (Html.BeginForm("AddMember", "Groups"))
+    using (Html.BeginForm("AddMember", "Groups", new { GroupID = Model.Group.GroupID }))
     {
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
-            <p>email:</p>
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.GroupID)
-            <div class="form-group row">
-                <div class="col-md-10">
 
-                    @Html.Editor("email", new { @class = "form-control" })
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Add New Member" class="btn btn-default" />
+            <div class="form-group row">
+                <input type="submit" value="Add New Member" class="btn btn-primary" />
+                <div class="col-md-10">
+                    @Html.Editor("email", new { htmlAttributes = new { @class = "form-control", placeholder = "(enter user email)" } })
                 </div>
             </div>
         </div>
@@ -32,41 +27,81 @@
 <table class="table">
     <tr>
         <th>
-            @("Member username")
+            @("Username")
         </th>
         <th>
             @("Nickname")
         </th>
-        <th></th>
+
+        @if (Model.Group.OwnerEmail == Model.CurrUser.Email)
+        {
+            <th></th>
+            <th></th>
+        }
+
     </tr>
 
     @for (int i = 0; i < Model.ListGroupNicknames.Count; i++)
     {
         <tr>
             <td>
-                @(Model.GroupUsers[i])
+                @(Model.UserInfo[i].UserName)
             </td>
             <td>
-                @(Model.ListGroupNicknames[i])
+                @{
+                    var extraUserName = "";
+                    if (Model.Group.OwnerEmail == Model.UserInfo[i].Email)
+                    {
+                        extraUserName += "owner";
+                    }
+                    if (Model.UserInfo[i].Email == Model.CurrUser.Email)
+                    {
+                        if (extraUserName != "")
+                        {
+                            extraUserName += ", ";
+                        }
+                        extraUserName += "me";
+                    }
+                    if (extraUserName != "")
+                    {
+                        @(Model.ListGroupNicknames[i]) <b><i>@("(" + extraUserName + ")")</i></b>
+                    }
+                    else
+                    {
+                        @(Model.ListGroupNicknames[i])
+                    }
+                }
             </td>
 
-            @if (Model.bIsOwner)
+            @if (Model.Group.OwnerEmail == Model.CurrUser.Email)
             {
                 <td>
-                    @Html.ActionLink("Edit Nickname", "EditNickname", new { id = Model.MembersID[i], GroupID = Model.GroupID })
+                    @Html.ActionLink("Edit Nickname", "EditNickname", new { id = Model.UserInfo[i].Id, GroupID = Model.Group.GroupID })
                 </td>
-                <td>
-                    @using (Html.BeginForm("Kick", "Groups", new { memberID = Model.MembersID[i], id_group = Model.GroupID }, FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
 
-                        <div class="form-actions red">
-                            <input type="submit" value="KICK" class="btn btn-primary" />
-                        </div>
-                    }
-                </td>
+                if (Model.Group.OwnerEmail != Model.UserInfo[i].Email)
+                {
+                    <td>
+                        @using (Html.BeginForm("Kick", "Groups", new { memberID = Model.UserInfo[i].Id, id_group = Model.Group.GroupID }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            <div class="form-actions red">
+                                <input type="submit" value="Kick" class="btn btn-primary" />
+                            </div>
+                        }
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
             }
         </tr>
     }
 
 </table>
+<p>
+    @Html.ActionLink("Back to Groups", "Index")
+</p>
+

@@ -8,11 +8,9 @@ using System.Web;
 
 namespace mss_project.Models
 {
-	public class MembersAdminViewModel
+	public class EditNicknameViewModel
 	{
-		public List<UserViewModel> UserInfo { get; set; }
-		public List<string> ListGroupNicknames { get; set; }
-		public Group Group { get; set; }
-		public UserViewModel CurrUser { get; set; }
+		public GroupMember CurrentMember { get; set; }
+		public string MemberUsername { get; set; }
 	}
 }

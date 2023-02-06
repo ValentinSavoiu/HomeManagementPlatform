@@ -1,37 +1,27 @@
-﻿@model mss_project.Models.GroupMember
+﻿@model mss_project.Models.EditNicknameViewModel
 
-@{
-    ViewBag.Title = "Edit";
-}
+<h2>Change Nickname - @(Model.MemberUsername)</h2>
 
-<h2>Edit</h2>
-
-@using (Html.BeginForm())
+@using (Html.BeginForm("EditNickname", "Groups", new { Group_ID = Model.CurrentMember.Group_ID, AppUser_ID = Model.CurrentMember.AppUser_ID }))
 {
     @Html.AntiForgeryToken()
     
 <div class="form-horizontal">
-    <h4>Group</h4>
-    <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(model => model.Group_ID)
-    @Html.HiddenFor(model => model.AppUser_ID)
 
     <div class="form-group row">
-        @Html.LabelFor(model => model.NickName, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.NickName, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.NickName, "", new { @class = "text-danger" })
+            @Html.Editor("NickName", new { htmlAttributes = new { @class = "form-control", @Value = Model.CurrentMember.NickName } })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Save" class="btn btn-default" />
+            <input type="submit" value="Save" class="btn btn-primary" />
         </div>
     </div>
 </div>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to Members", "Members", new { id = Model.CurrentMember.Group_ID })
 </div>
