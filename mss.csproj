@@ -221,7 +221,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EditNicknameViewModel.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserViewModel.cs" />
     <Compile Include="Models\MembersAdminViewModel.cs" />
     <Compile Include="Models\GroupsAdministratorViewModel.cs" />
     <Compile Include="Models\Group.cs" />
