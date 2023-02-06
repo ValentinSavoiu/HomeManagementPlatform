@@ -18,8 +18,7 @@
                 <a href="/home" class="btn btn-primary">HMP</a>
                 @if (Request.IsAuthenticated)
                 {
-                    <a href="/Members" class="btn btn-primary">Members</a>
-                    <a href="/Tickets" class="btn btn-primary">Tickets</a>
+                    <a href="/Groups" class="btn btn-primary">Groups</a>
                 }
                 <button onclick="toggleDark()" class="btn btn-primary">Toggle dark mode</button>
                 @Html.Partial("_LoginPartial")

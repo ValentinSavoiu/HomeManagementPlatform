@@ -8,10 +8,11 @@ using System.Web;
 
 namespace mss_project.Models
 {
-	public class ChangeAssigneesViewModel
+	public class MembersAdminViewModel
 	{
-		public int TicketID { get; set; }
-		public List<Member> Assignees { get; set; }
-		public List<Member> UnassignedMembers { get; set; }
+		public List<UserViewModel> UserInfo { get; set; }
+		public List<string> ListGroupNicknames { get; set; }
+		public Group Group { get; set; }
+		public UserViewModel CurrUser { get; set; }
 	}
 }

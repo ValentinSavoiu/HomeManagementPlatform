@@ -1,27 +1,68 @@
-﻿@model IEnumerable<mss_project.Models.Group>
+﻿@model mss_project.Models.GroupsAdministratorViewModel
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Groups</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New Group", "Create")
 </p>
 <table class="table">
     <tr>
+        <th>
+            @("Name")
+        </th>
+        <th>
+            @("Owner email")
+        </th>
+
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.GroupID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.GroupID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.GroupID })
+    @foreach (var item in Model.ListGroupsJoined)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OwnerEmail)
+                @if (item.OwnerEmail == Model.CurrentUser.Email)
+                {
+                    <b><i>(me)</i></b>
+                }
+            </td>
+
+            @if (item.OwnerEmail == Model.CurrentUser.Email)
+            {
+                <td>
+                    @Html.ActionLink("Change Name", "ChangeName", new { id = item.GroupID }) |
+                    @Html.ActionLink("Members", "Members", new { id = item.GroupID }) |
+                    @Html.ActionLink("Tickets", "Tickets", new { id = item.GroupID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.GroupID })
+                </td>
+            }
+            else
+            {
+        <td>            
+            @using (Html.BeginForm("Exit", "Groups", new { id_group = item.GroupID}, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-actions no-color">
+                    @Html.ActionLink("Members", "Members", new { id = item.GroupID }) |
+                    @Html.ActionLink("Tickets", "Tickets", new { id = item.GroupID }) |
+                    <input type="submit" value="Exit Group" class="btn btn-primary" />
+                </div>
+            }
+           
         </td>
-    </tr>
-}
+            }
+
+
+        </tr>
+    }
 
 </table>
