@@ -25,6 +25,10 @@ namespace mss_project.Models
 		public Ticket currentTicket { get; set; }
 		public string CreatorNickName { get; set; }
 		public List<string> AssigneesNickNames { get; set; }
+		public List<Comment> Comments { get; set; }
+		public List<string> CommentNicknames { get; set; }
+		public ApplicationUser currentUser { get; set; }
+		public Comment NewComment { get; set; }
 	}
 
 	public class TicketIndexViewModel

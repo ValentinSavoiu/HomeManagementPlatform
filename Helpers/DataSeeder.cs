@@ -42,8 +42,6 @@ namespace mss_project.Helpers
 
 				dbContext.Database.ExecuteSqlCommand("ALTER TABLE AspNetUsers DROP COLUMN Discriminator;");
 				dbContext.Database.ExecuteSqlCommand("ALTER TABLE [dbo].[AspNetUsers] ADD [Discriminator] [nvarchar](128) DEFAULT 'ApplicationUser';");
-				//dbContext.Database.ExecuteSqlCommand("ALTER TABLE Ticket DROP CONSTRAINT [FK_dbo.Ticket_dbo.Member_CreatorID];");
-				//dbContext.Database.ExecuteSqlCommand("ALTER TABLE Ticket ADD CONSTRAINT [FK_dbo.Ticket_dbo.Member_CreatorID] FOREIGN KEY ([CreatorID]) REFERENCES [dbo].[Member] ([MemberID]) ON DELETE SET NULL");
 
 				var users = new ApplicationUser[] { 
 					new ApplicationUser { UserName = "ioniq_alex", Email = "ionica.alexandru@email.com" },
@@ -100,6 +98,13 @@ namespace mss_project.Helpers
 				};
 
 				dbContext.GroupMembers.AddRange(groupMembers);
+
+				var comments = new List<Comment> { };
+				comments.Add(new Comment { PreviousComment = null, Ticket = tickets[0], CommentCreator = users[0], Text = "Ce trebuie cumparat? :)\nCat buget avem pentru cumparaturi?\n", DateCreated = new DateTime(2022, 12, 20, 10, 30, 20) });
+				comments.Add(new Comment { PreviousComment = comments[0], Ticket = tickets[0], CommentCreator = users[1], Text = "In primul rand trebuie luate ingrediente pentru cozonac:\n   Faina\n   Zahar\n   Drojdie\n", DateCreated = new DateTime(2022, 12, 20, 15, 15, 10) });
+				comments.Add(new Comment { PreviousComment = comments[1], Ticket = tickets[0], CommentCreator = users[2], Text = "Legat de buget, cred ca avem destul cat sa ne permitem niste ingrediente de cozonac", DateCreated = new DateTime(2022, 12, 21, 9, 45, 31) });
+
+				dbContext.Comments.AddRange(comments);
 
 				dbContext.SaveChanges();
 			}
