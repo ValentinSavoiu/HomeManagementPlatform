@@ -70,7 +70,50 @@
 
     </dl>
 </div>
+
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.currentTicket.TicketID }) |
     @Html.ActionLink("Back to Tickets", "Tickets", "Groups", new { id = Model.currentTicket.GroupID }, new { })
 </p>
+
+<div>
+    <h4>Comments</h4>
+    @using (Html.BeginForm("AddComment", "Tickets"))
+    {
+        @Html.AntiForgeryToken()
+
+        <div>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.Hidden("PreviousCommentID", Model.Comments.LastOrDefault()?.CommentID)
+            @Html.Hidden("TicketID", Model.currentTicket.TicketID)
+            @Html.Hidden("CreatorID", Model.currentUser.Id)
+            @Html.Hidden("DateCreated", DateTime.Now)
+
+            <div class="form-group row">
+                <div class="col-md-10">
+                    @Html.TextArea("Text", new { @class = "form-control", @rows = 3, @style = "max-width:700px" })
+                    @Html.ValidationMessage("Text", "", new { @class = "text-danger", @style = "background-color: black" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Add Comment" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    }
+    <dl class="dl-horizontal">
+        @for (int i = 0; i < Model.Comments.Count(); ++i)
+        {
+            <div style="background-color: black; border-color: blue; border-width: thin; border-style: solid;">
+                <dd>
+                    <b>@(Model.CommentNicknames[i]) - @(Model.Comments[i].DateCreated)</b>
+                </dd>
+
+                <dd style="white-space:pre;">@(Model.Comments[i].Text)</dd>
+            </div>
+        }
+    </dl>
+</div>
+

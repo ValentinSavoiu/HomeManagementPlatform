@@ -24,6 +24,9 @@ namespace mss_project.Models
 		[InverseProperty("Assignees")]
 		public virtual ICollection<Ticket> AssignedTickets { get; set; }
 
+		[InverseProperty("CommentCreator")]
+		public virtual ICollection<Comment> CreatedComments { get; set; }
+
 		public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

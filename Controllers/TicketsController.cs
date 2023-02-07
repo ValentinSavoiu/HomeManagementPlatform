@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using mss_project.DatabaseStuff;
@@ -48,7 +49,61 @@ namespace mss_project.Controllers
 				return HttpNotFound();
 			}
 
-			return View(new TicketDetailsViewModel { currentTicket = ticket, CreatorNickName = ticket.GetCreatorNickname(db), AssigneesNickNames = ticket.GetAssigneeNicknames(db) });
+			List<Comment> comments = db.Comments.Where(x => x.TicketID == ticket.TicketID).ToList();
+			var dummyTicket = new Ticket { GroupID = ticket.GroupID };
+			List<string> commentNickNames= new List<string>();
+			foreach(var comment in comments)
+			{
+				dummyTicket.Creator = comment.CommentCreator;
+				commentNickNames.Add(dummyTicket.GetCreatorNickname(db));
+			}
+
+			var currentUser = db.ApplicationUsers.Find(User.Identity.GetUserId());
+
+			return View(new TicketDetailsViewModel { 
+				currentTicket = ticket, 
+				CreatorNickName = ticket.GetCreatorNickname(db), 
+				AssigneesNickNames = ticket.GetAssigneeNicknames(db),
+				Comments = comments,
+				CommentNicknames = commentNickNames,
+				currentUser = currentUser
+			});
+		}
+
+		// POST: Tickets/AddComment
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult AddComment([Bind(Include = "PreviousCommentID,TicketID,CreatorID,DateCreated,Text")] Comment newComment)
+		{
+			if (ModelState.IsValid)
+			{
+				db.Comments.Add(newComment);
+				db.SaveChanges();
+				return RedirectToAction("Details", new {id = newComment.TicketID});
+			}
+
+			Ticket ticket = db.Tickets.Find(newComment.TicketID);
+			List<Comment> comments = db.Comments.Where(x => x.TicketID == ticket.TicketID).ToList();
+			var dummyTicket = new Ticket { GroupID = ticket.GroupID };
+			List<string> commentNickNames = new List<string>();
+			foreach (var comment in comments)
+			{
+				dummyTicket.Creator = comment.CommentCreator;
+				commentNickNames.Add(dummyTicket.GetCreatorNickname(db));
+			}
+
+			var currentUser = db.ApplicationUsers.Find(User.Identity.GetUserId());
+
+			return View("Details", new TicketDetailsViewModel
+			{
+				currentTicket = ticket,
+				CreatorNickName = ticket.GetCreatorNickname(db),
+				AssigneesNickNames = ticket.GetAssigneeNicknames(db),
+				Comments = comments,
+				CommentNicknames = commentNickNames,
+				currentUser = currentUser,
+				NewComment = newComment
+			});
 		}
 
 		// GET: Tickets/Create

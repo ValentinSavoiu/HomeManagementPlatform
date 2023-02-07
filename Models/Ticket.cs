@@ -36,8 +36,8 @@ namespace mss_project.Models
         [InverseProperty("AssignedTickets")]
 		public virtual ICollection<ApplicationUser> Assignees { get; set; }
 
-
-
+		[InverseProperty("Ticket")]
+		public virtual ICollection<Comment> Comments { get; set; }
 	}
 
     public enum TicketStatus
